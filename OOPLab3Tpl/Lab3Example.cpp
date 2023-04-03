@@ -5,52 +5,16 @@
 using namespace std;
 #include <fstream>
 
-class Icosahedron {
-  double a; // side of the icosahedron
-  unsigned int color;
-
-public:
-  Icosahedron() : a(1.0), color(0) {}
-  Icosahedron(double ai) : a(ai), color(0) {}
-  Icosahedron(int ic) : a(1.0) {
-    if (ic >= 0)
-      color = ic;
-    else
-      color = 0;
-  }
-  Icosahedron(double a, int c) {
-    this->a = a;
-    if (c >= 0)
-      color = c;
-    else
-      color = 0;
-  }
-  double getA() const { return a; }
-  void setA(double a) {
-    if (a < 0 || a > 1.e+100) {
-      cout << " Error set  a \n";
-      return;
-    }
-    this->a = a;
-  }
-  double getColor() const { return color; }
-  void setColor(int c) {
-    if (c < 0 || c > 10000) {
-      cout << " Error set  color \n";
-      return;
-    }
-    this->color = c;
-  }
-  double S() { return 5 * a * a * sqrt(3.0); }
-  double V() { return 5 * a * a * a * (3 + sqrt(5.0)) / 12.0; }
-  double r() { return a * (3 + sqrt(5.0)) / (4.0 * sqrt(3.0)); }
-  double R() { return sqrt(2 * (5 + sqrt(5.0) * a)) / 4.0; }
-  void printInfo() {
-    cout << "\n a= " << a << " color = " << color;
-    cout << "  S= " << S() << " V = " << V() << "  r= " << r() << " V = " << R()
-         << endl;
-  }
-};
+/*	Створити клас типу - дата з полями: день (1-31), місяць (1-12), рік
+(ціле число). У класі визначити
+        - 	конструктори ( не менше двох);
+        - 	функції-члени встановлення дня, місяця та року, функції
+встановлення полів класу повинні перевіряти коректність параметрів, що
+задаються;
+        - 	функції-члени одержання дня, місяця та року;
+        - 	дві функції-члени друку за шаблоном: “5 січня 2019 року” і
+“05.01.2019”. Написати програму тестування всіх можливостей цього класу.
+*/
 
 class Date {
 private:
@@ -144,17 +108,6 @@ void ShowExersice1Menu() {
   cout << "4. Default date with numbers" << endl;
 }
 
-/*	Створити клас типу - дата з полями: день (1-31), місяць (1-12), рік
-(ціле число). У класі визначити
-        - 	конструктори ( не менше двох);
-        - 	функції-члени встановлення дня, місяця та року, функції
-встановлення полів класу повинні перевіряти коректність параметрів, що
-задаються;
-        - 	функції-члени одержання дня, місяця та року;
-        - 	дві функції-члени друку за шаблоном: “5 січня 2019 року” і
-“05.01.2019”. Написати програму тестування всіх можливостей цього класу.
-*/
-
 void exercise1() {
   bool isSelected = false;
   Date d;
@@ -198,10 +151,35 @@ void exercise1() {
 
 enum STATE { OK, BAD_INIT, BAD_DIV };
 
+/*Задача 2 Створити тип даних - клас вектор, який має вказівник на int, число елементів
+і змінну стану. У класі визначити
+
+- конструктор без параметрів( виділяє місце для одного елемента та інінціалізує
+його в нуль);
+- конструктор з одним параметром - розмір вектора( виділяє місце та інінціалізує
+масив значенням нуль);
+- конструктор із двома параметрами - розмір вектора та значення
+ініціалізації(виділяє місце (значення перший аргумент) та інінціалізує
+значенням другого аргументу).
+- конструктор копій та операцію присвоєння; // !!!
+- деструктор звільняє пам'ять.
+- визначити функцію, яка присвоює елементу масиву деяке значення (параметр за
+замовчуванням);
+- функцію яка одержує деякий елемент масиву;
+- визначити функції друку, додавання, віднімання, які здійснюють ці
+арифметичні операції з даними цього класу, множення на ціле типу short;
+- визначити функції порівняння: більше, менше або рівно, які повертають true
+або false.
+
+У змінну стани встановлювати код помилки, коли не вистачає пам'яті, виходить за межі масиву.
+Передбачити можливість підрахунку числа об'єктів даного типу. Написати програму тестування
+всіх можливостей цього класу.
+*/
+
 class Vector {
   int *point;
   int length;
-  int state;
+  int state = OK;
 
 public:
   Vector() {
@@ -227,6 +205,9 @@ public:
 
   Vector(Vector &v) {
     length = v.length;
+    if (v.point == nullptr) {
+      state = BAD_INIT;
+    }
     point = new int(v.length);
     for (int i = 0; i < v.length; i++) {
       point[i] = v.point[i];
@@ -239,17 +220,28 @@ public:
     }
 
   void setValue(int index, int value = 0) {
-    point[index] = value;
+    if (index >= length ) {
+      state = BAD_INIT;
+      cout << "Out of range" << endl;
+    } else {
+      point[index] = value;
+    }
   }
 
   int returnValue(int index) {
-    return point[index];
+    if (index >= length ) {
+      state = BAD_INIT;
+      cout << "Out of range" << endl;
+    } else {
+      return point[index];
+    }
   }
 
   void print() {
     for (int i = 0; i < length; i++) {
       cout << point[i] << " ";
     }
+    cout << endl;
   };
 
   void sum(Vector &v) {
@@ -307,191 +299,12 @@ public:
   }
 };
 
+
 void exercise2() {
   Vector vector1(4, 2);
   Vector vector2(vector1);
   vector2.mult(3);
+  cout << vector2.more(vector2, vector1) << endl;
   vector2.print();
+  vector2.setValue(10);
 }
-
-// Ключове слово static
-/*example  4
-Створити тип даних - клас вектор, який має вказівник на ComplexDouble, число
-елементів і змінну стану. У класі визначити o	 конструктор без параметрів(
-виділяє місце для одного елемента та інінціалізує його в нуль); o
-конструктор з одним параметром - розмір вектора( виділяє місце та інінціалізує
-масив значенням нуль);
-o	конструктор із двома параметрами - розмір вектора та значення
-ініціалізації(виділяє місце (значення перший аргумент) та інінціалізує значенням
-другого аргументу). o	конструктор копій та операцію присвоєння; // !!! o
-деструктор звільняє пам'ять; o	визначити функції друку, додавання; У змінну
-стани встановлювати код помилки, коли не вистачає пам'яті, виходить за межі
-масиву. Передбачити можливість підрахунку числа об'єктів даного типу. Написати
-програму тестування всіх можливостей цього класу.
-*/
-
-#include <complex>
-using namespace std;
-typedef complex<double> ComplexDouble;
-#define _RE 0
-#define _IM 1
-
-class ComplexVector {
-  ComplexDouble *v;
-  int num; // default num=2
-  int state = 0;
-
-public:
-  ComplexVector() : ComplexVector(2) {}
-  ComplexVector(int n);
-  ComplexVector(int n, ComplexDouble &);
-  ComplexVector(int n, ComplexDouble *);
-  ComplexVector(const ComplexVector &s);
-  ComplexVector &operator=(const ComplexVector &s);
-  ~ComplexVector() {
-    std::cout << " del vec";
-    if (v)
-      delete[] v;
-  }
-  void Output();
-  void Input();
-  ComplexVector Add(ComplexVector &b);
-};
-
-ComplexVector::ComplexVector(int n) {
-  if (n <= 0)
-    n = 2; // default num =2;
-  num = n;
-  v = new ComplexDouble[n];
-  for (int i = 0; i < n; i++) {
-    v[i] = 0.0;
-    // v[i]._Val[_RE]=0.0; v[i]._Val[_IM]=0.0;
-  }
-}
-ComplexVector::ComplexVector(int n, ComplexDouble &b) : ComplexVector(n) {
-  for (int i = 0; i < num; i++) {
-    v[i] = b;
-    // v[i]._Val[_RE]=0.0; v[i]._Val[_IM]=0.0;
-  }
-}
-
-ComplexVector::ComplexVector(int n, ComplexDouble *p) : ComplexVector(n) {
-  if (p != nullptr)
-    for (int i = 0; i < num; i++)
-      v[i] = p[i];
-}
-
-ComplexVector::ComplexVector(const ComplexVector &s) {
-  // if (this == &s) return;  // the expression is used in the old standard
-  num = s.num;
-  v = new ComplexDouble[num];
-  state = 0;
-  for (int i = 0; i < num; i++)
-    v[i] = s.v[i];
-}
-
-ComplexVector &ComplexVector::operator=(const ComplexVector &s) {
-
-  if (num != s.num) {
-    if (v)
-      delete[] v;
-    num = s.num;
-    v = new ComplexDouble[num];
-    state = 0;
-  }
-  for (int i = 0; i < num; i++)
-    v[i] = s.v[i];
-  return *this;
-}
-void ComplexVector::Input() {
-  int in_num = 0;
-  do {
-    cout << "Input size Vec\n";
-    cin >> in_num;
-  } while (in_num <= 0);
-  if (num != in_num) {
-    num = in_num;
-    if (v)
-      delete[] v;
-    v = new ComplexDouble[num];
-  }
-  for (int i = 0; i < num; i++) {
-
-#if defined(_MSC_VER)
-    cout << " v [ " << i << " ] real img  ";
-    cin >> v[i] >> v[i]._Val[_IM];
-#else
-    double re, im;
-    cout << " v [ " << i << " ] real img  ";
-    cin >> re >> im;
-    v[i].real(re);
-    v[i].imag(im);
-#endif
-  }
-}
-
-void ComplexVector::Output() {
-  if (num != 0) {
-    for (int i = 0; i < num; i++) {
-      cout << " v [ " << i << " ]   " << v[i] << '\t';
-      cout << endl;
-    }
-  }
-}
-
-ComplexVector ComplexVector::Add(ComplexVector &b) {
-  int tnum;
-  tnum = num < b.num ? num : b.num;
-  if (tnum >= 0) {
-    ComplexVector tmp(tnum);
-    for (int i = 0; i < tnum; i++)
-      tmp.v[i] = v[i] + b.v[i];
-    return tmp;
-  }
-  return ComplexVector(1);
-}
-
-int mainExample4() {
-  ComplexDouble a(1.0, 2), b, c;
-  cout << a << endl;
-#if defined(_MSC_VER)
-  b._Val[_RE] = 21.3;
-  b._Val[_IM] = 22.3;
-#else
-  b.real(21.3);
-  b.imag(22.3);
-#endif
-
-  cout << b << endl;
-  c = a + b;
-  cout << c << endl;
-  cout << " Test  " << endl;
-  ComplexVector VecObj, VecObj1(10);
-  cout << "VecObj \n";
-  VecObj.Output();
-  cout << "VecObj1 \n";
-  VecObj1.Output();
-  cout << " Input a " << endl;
-
-#if defined(_MSC_VER)
-  cin >> a >> a._Val[_IM];
-#else
-  double re, im;
-  cin >> re >> im;
-  a.real(re);
-  a.imag(im);
-#endif
-  cout << a << endl;
-  ComplexVector VecObj2(10, a);
-  VecObj2.Output();
-
-  VecObj.Input();
-  cout << endl;
-  VecObj.Output();
-  VecObj1 = VecObj.Add(VecObj2);
-  VecObj1.Output();
-
-  return 1;
-}
-
-///
